@@ -1,8 +1,26 @@
 import express from 'express'
+import cors from 'cors'
+import 'dotenv/config'
 
+//app config
 
+const app = express();
 
+const port = process.env.PORT || 4000
 
-// git remote add origin https://github.com/Learnwave/hospital_app_backend.git
-// git branch -M main
-// git push -u origin main
+//middle wares
+
+app.use(express.json());
+app.use(cors());
+
+//api endpoints
+
+app.get('/',(req,res)=>{
+        res.send("API WORKING")
+})
+
+app.listen(port,()=>{
+    console.log("server started ",port);
+
+})
+
