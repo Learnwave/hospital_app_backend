@@ -1,7 +1,7 @@
 import bycrypt from "bcrypt"
 import { v2 as cloudinary } from "cloudinary";
 
-
+import jwt from "jsonwebtoken"
 
 //api for adding doctors
 
@@ -13,6 +13,7 @@ const addDoctor = async (req,res) =>{
     try {
         const {name,email,password,speciality,degree,experience,about,fees,address} = req.body;
         const imageFile = req.file
+        console.log({name,email,password,speciality,degree,experience,about,fees,address});
         
         
         //checking for all data in form
@@ -74,12 +75,34 @@ const addDoctor = async (req,res) =>{
 //api for the admin login
 
 const loginAdmin = async (req,res) => {
+    
         try {
+            const {email,password} = req.body;
             
+            
+            if(email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD){
+                const token = jwt.sign(email+password,process.env.JWT_SECRET);
+
+                res.json({success:true,token})
+            }else{
+                res.json({success:false,message:"invalid credentials"})
+            }
+
         } catch (error) {
             console.error(error)
             res.json({success:false,message:error.message})
         }
 }
+//api to get all doctor list
 
-export {addDoctor,loginAdmin}
+const allDoctor = async (req,res) => {
+    try {
+        const doctors = await doctorModel.find({}).select('-password')
+        res.json({success:true,doctors});
+    } catch (error) {
+        console.error(error)
+        res.json({success:false,message:error.message})
+    }
+}
+
+export {addDoctor,loginAdmin,allDoctor}
